@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Quiz Track</string>
+
+
+    <string name="welcome">Welcome</string>
+    <string name="to">to</string>
+    <string name="login_or_register">Login or register</string>
+    <string name="google">Google</string>
+
 </resources>
