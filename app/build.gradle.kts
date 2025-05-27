@@ -91,4 +91,10 @@ dependencies {
     // Compose Material Icons Extended
     implementation(libs.androidx.material.icons.extended)
 
+    // Media and Exo Player
+    implementation(libs.androidx.media)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+
+
 }
