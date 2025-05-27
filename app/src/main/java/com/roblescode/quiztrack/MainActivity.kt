@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.roblescode.quiztrack.data.api.TriviaApiClient.triviaApi
 import com.roblescode.quiztrack.data.repository.AuthRepositoryImpl
 import com.roblescode.quiztrack.ui.navigation.AppNavHost
 import com.roblescode.quiztrack.ui.screens.auth.AuthViewModel
@@ -20,7 +21,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val authRepository = AuthRepositoryImpl(auth = FirebaseAuth.getInstance())
+        val authRepository = AuthRepositoryImpl(
+            auth = FirebaseAuth.getInstance(),
+            triviaApi = triviaApi
+        )
         val authViewModel = AuthViewModel(authRepository = authRepository)
 
         setContent {
