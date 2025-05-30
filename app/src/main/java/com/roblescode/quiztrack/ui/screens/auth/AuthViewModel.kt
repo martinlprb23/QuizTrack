@@ -20,8 +20,15 @@ class AuthViewModel(
 
     fun signInWithGoogle(context: Context) {
         viewModelScope.launch {
-            loginResponse.value = Response.Loading
-            loginResponse.value = authRepository.googleSignIn(context)
+            _loginResponse.value = Response.Loading
+            _loginResponse.value = authRepository.googleSignIn(context)
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+            _loginResponse.value = null
         }
     }
 

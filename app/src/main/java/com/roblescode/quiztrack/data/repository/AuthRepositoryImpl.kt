@@ -11,18 +11,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.roblescode.quiztrack.R
-import com.roblescode.quiztrack.data.api.TriviaApiService
-import com.roblescode.quiztrack.data.model.LoginRequest
 import com.roblescode.quiztrack.data.utils.Response
 import com.roblescode.quiztrack.domain.repository.AuthRepository
 import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
 import java.util.UUID
 
-class AuthRepositoryImpl(
-    private val auth: FirebaseAuth,
-    private val triviaApi: TriviaApiService
-) : AuthRepository {
+class AuthRepositoryImpl(private val auth: FirebaseAuth) : AuthRepository {
 
     companion object {
         const val TAG = "AuthRepository"
@@ -60,16 +55,6 @@ class AuthRepositoryImpl(
 
                 val googleCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
                 val authResult = auth.signInWithCredential(googleCredential).await()
-                val userTokenId = authResult.user!!.getIdToken(true).await()
-
-                val loginRequest = LoginRequest(userTokenId.token!!)
-                val response = triviaApi.login(loginRequest)
-
-                if (!response.success) {
-                    throw Exception(response.message)
-                }
-
-                Log.d(TAG, response.message)
                 Response.Success(authResult.user!!)
             } else {
                 throw Exception("Invalid credential type")

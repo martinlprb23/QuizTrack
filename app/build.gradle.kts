@@ -77,6 +77,8 @@ dependencies {
     // Retrofit: HTTP client for making REST API calls
     implementation(libs.retrofit)
     implementation(libs.retrofit.serialization.converter)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
 
     // Serialization: JSON serialization and deserialization
     implementation(libs.kotlinx.serialization.json)

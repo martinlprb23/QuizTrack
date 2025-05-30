@@ -6,5 +6,7 @@
     <string name="to">to</string>
     <string name="login_or_register">Login or register</string>
     <string name="google">Google</string>
+    <string name="quiz">Quiz</string>
+    <string name="playlists">Playlists</string>
 
 </resources>
