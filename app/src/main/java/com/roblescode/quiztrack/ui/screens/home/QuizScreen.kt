@@ -76,7 +76,7 @@ fun QuizScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Rounded.ArrowBackIosNew, null)
                     }
-                }
+                },
             )
         }
     ) {

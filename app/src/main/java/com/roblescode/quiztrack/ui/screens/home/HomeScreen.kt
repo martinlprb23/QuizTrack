@@ -20,9 +20,13 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -81,6 +85,16 @@ fun HomeScreen(
                     )
                 },
                 title = { Text(stringResource(R.string.playlists)) },
+                actions = {
+                    IconButton(onClick = {
+                        authViewModel.logout()
+                        navController.navigate(Routes.AUTH) {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                        }
+                    }) {
+                        Icon(Icons.Rounded.Close, null)
+                    }
+                }
             )
         }
     ) {
@@ -168,7 +182,7 @@ fun PlaylistsList(modifier: Modifier = Modifier, list: List<Playlist>, onClick: 
 
 @Composable
 fun PlaylistsError(modifier: Modifier = Modifier, errorText: String?) {
-    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(errorText ?: "Unknown error")
     }
 }
