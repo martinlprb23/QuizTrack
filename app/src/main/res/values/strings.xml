@@ -6,7 +6,21 @@
     <string name="to">to</string>
     <string name="login_or_register">Login or register</string>
     <string name="google">Google</string>
-    <string name="quiz">Quiz</string>
     <string name="playlists">Playlists</string>
+
+    <!-- QuizScreen -->
+    <string name="quiz">Quiz</string>
+    <string name="error_unknown">Unknown error</string>
+
+    <!-- GameSection -->
+    <string name="loading_question">Loading question…</string>
+    <string name="question_counter">%1$d/%2$d</string>
+
+    <!-- GameResultSection -->
+    <string name="game_finished">Game Over!</string>
+    <string name="score">Score: %1$d</string>
+    <string name="correct_answers">Correct: %1$d out of %2$d</string>
+    <string name="new_high_score">🎉 New personal high score!</string>
+
 
 </resources>

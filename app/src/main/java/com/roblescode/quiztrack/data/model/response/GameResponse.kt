@@ -11,18 +11,19 @@ data class GameResponse(
 
 @Serializable
 data class GameData(
+    val currentScore: Int = 0,
+    val correctAnswers: Int = 0,
     val sessionId: String,
     val questions: List<Question>,
-    val playlistId: String,
-    val totalQuestions: Int
+    val playlistId: Long,
 )
 
 
 @Serializable
 data class Question(
-    val questionId: Long,
+    val trackId: Long,
     val previewUrl: String,
-    val options: List<Option>
+    val options: List<Option> = emptyList()
 )
 
 

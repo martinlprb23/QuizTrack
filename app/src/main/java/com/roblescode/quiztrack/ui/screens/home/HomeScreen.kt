@@ -20,14 +20,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -65,7 +60,8 @@ fun HomeScreen(
 ) {
 
     LaunchedEffect(Unit) {
-        triviaViewModel.getPlaylists(authViewModel.currentUser)
+        triviaViewModel.setCurrentUser(authViewModel.currentUser)
+        triviaViewModel.getPlaylists()
     }
 
 
@@ -85,22 +81,6 @@ fun HomeScreen(
                     )
                 },
                 title = { Text(stringResource(R.string.playlists)) },
-                actions = {
-                    IconButton(onClick = {
-                        triviaViewModel.getPlaylists(authViewModel.currentUser, forceRefresh = true)
-                    }) {
-                        Icon(Icons.Rounded.Refresh, null)
-                    }
-
-                    IconButton(onClick = {
-                        authViewModel.logout()
-                        navController.navigate(Routes.AUTH) {
-                            popUpTo(navController.graph.id) { inclusive = true }
-                        }
-                    }) {
-                        Icon(Icons.Rounded.Close, null)
-                    }
-                }
             )
         }
     ) {
@@ -125,7 +105,7 @@ fun HomeScreen(
 
 
 @Composable
-fun PlaylistsList(modifier: Modifier = Modifier, list: List<Playlist>, onClick: (String) -> Unit) {
+fun PlaylistsList(modifier: Modifier = Modifier, list: List<Playlist>, onClick: (Long) -> Unit) {
     LazyVerticalStaggeredGrid(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -156,7 +136,7 @@ fun PlaylistsList(modifier: Modifier = Modifier, list: List<Playlist>, onClick: 
                     modifier = modifier
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.large)
-                        .clickable(onClick = { onClick(playlist.id.toString()) })
+                        .clickable(onClick = { onClick(playlist.id) })
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
@@ -176,12 +156,10 @@ fun PlaylistsList(modifier: Modifier = Modifier, list: List<Playlist>, onClick: 
                         color = Color.White,
                         modifier = modifier
                             .align(Alignment.BottomStart)
-                            .fillMaxWidth()
                             .padding(4.dp)
                             .background(Color.Black.copy(alpha = 0.75f), RoundedCornerShape(12.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
-
                 }
             }
         }
@@ -190,5 +168,7 @@ fun PlaylistsList(modifier: Modifier = Modifier, list: List<Playlist>, onClick: 
 
 @Composable
 fun PlaylistsError(modifier: Modifier = Modifier, errorText: String?) {
-
+    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        Text(errorText ?: "Unknown error")
+    }
 }

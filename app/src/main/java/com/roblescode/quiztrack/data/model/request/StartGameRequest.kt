@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StartGameRequest(
-    val playlistId: String,
+    val playlistId: Long,
     val uid: String,
 )

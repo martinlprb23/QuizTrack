@@ -52,7 +52,7 @@ fun AppNavHost(
                 }
             )
         ) {
-            val playlistId = it.arguments?.getString("playlistId")
+            val playlistId = it.arguments?.getString("playlistId")?.toLongOrNull()
             if (playlistId != null) {
                 QuizScreen(
                     playlistId = playlistId,

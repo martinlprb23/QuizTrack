@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,18 +33,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.roblescode.quiztrack.R
+import com.roblescode.quiztrack.data.model.request.Answer
 import com.roblescode.quiztrack.data.model.response.GameData
+import com.roblescode.quiztrack.data.model.response.SubmitAnswerData
 import com.roblescode.quiztrack.data.utils.Response
 import com.roblescode.quiztrack.domain.utils.AudioPlayer
 import com.roblescode.quiztrack.ui.screens.auth.AuthViewModel
 import com.roblescode.quiztrack.ui.screens.home.components.PlayAndPause
 import com.roblescode.quiztrack.ui.screens.home.components.QuizOptions
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizScreen(
     modifier: Modifier = Modifier,
-    playlistId: String,
+    playlistId: Long,
     triviaViewModel: TriviaViewModel,
     navController: NavHostController,
     authViewModel: AuthViewModel
@@ -86,10 +90,11 @@ fun QuizScreen(
 
                 is Response.Success -> GameSection(
                     gameData = gameResponse.data,
+                    coverImageUrl = playListCover,
                     isAudioPlaying = isPlaying,
                     onPlayAudio = { url -> audioPlayer.play(url) },
                     onPauseAudio = { audioPlayer.pause() },
-                    playListCover = playListCover,
+                    triviaViewModel = triviaViewModel
                 )
 
                 is Response.Failure -> Text(
@@ -105,13 +110,34 @@ fun QuizScreen(
 fun GameSection(
     modifier: Modifier = Modifier,
     gameData: GameData,
+    coverImageUrl: String?,
     isAudioPlaying: Boolean,
     onPlayAudio: (String) -> Unit,
     onPauseAudio: () -> Unit,
-    playListCover: String?,
+    triviaViewModel: TriviaViewModel,
 ) {
     var currentIndex by remember { mutableIntStateOf(0) }
     val currentQuestion = gameData.questions.getOrNull(currentIndex)
+    val answerResponse by triviaViewModel.answerResponse.collectAsState()
+
+    var isWaitingForAnswer by remember { mutableStateOf(false) }
+    var isGameFinished by remember { mutableStateOf(false) }
+    var finalResult by remember { mutableStateOf<SubmitAnswerData?>(null) }
+
+    LaunchedEffect(answerResponse) {
+        if (isWaitingForAnswer && answerResponse is Response.Success) {
+            val data = (answerResponse as Response.Success).data
+
+            if (data.isComplete) {
+                isGameFinished = true
+                finalResult = data
+            } else {
+                delay(500)
+                currentIndex++
+                isWaitingForAnswer = false
+            }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -120,39 +146,78 @@ fun GameSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        currentQuestion?.let { question ->
-            if (question.previewUrl.isNotEmpty()) {
+        when {
+            isGameFinished && finalResult != null -> {
+                GameResultSection(finalResult!!)
+            }
 
-                PlayAndPause(
-                    isAudioPlaying = isAudioPlaying,
-                    onPlayAudio = { onPlayAudio(question.previewUrl) },
-                    onPauseAudio = onPauseAudio,
-                    playListCover = playListCover
-                )
+            currentQuestion != null -> {
+                if (currentQuestion.previewUrl.isNotEmpty()) {
+                    PlayAndPause(
+                        isAudioPlaying = isAudioPlaying,
+                        onPlayAudio = { onPlayAudio(currentQuestion.previewUrl) },
+                        onPauseAudio = onPauseAudio,
+                        playListCover = coverImageUrl
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = stringResource(
+                            R.string.question_counter,
+                            currentIndex + 1,
+                            gameData.questions.size
+                        ),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(
-                    text = "${currentIndex + 1}/${gameData.totalQuestions}",
-                    style = MaterialTheme.typography.titleMedium
+                QuizOptions(
+                    question = currentQuestion,
+                    onOptionSelected = { option ->
+                        if (!isWaitingForAnswer) {
+                            isWaitingForAnswer = true
+                            triviaViewModel.sendAnswer(
+                                gameData.sessionId,
+                                Answer(
+                                    questionId = currentQuestion.trackId,
+                                    selectedOptionId = option.id
+                                )
+                            )
+                        }
+                    },
+                    enabled = !isWaitingForAnswer
                 )
-
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            QuizOptions(
-                question = question,
-                onOptionSelected = { option ->
-                    currentIndex++
-                    if (currentIndex <= gameData.questions.lastIndex) {
-                        onPlayAudio(gameData.questions[currentIndex].previewUrl)
-                    }
-                }
-            )
-        } ?: run {
-            Text("¡Juego terminado!")
+            else -> {
+                Text(stringResource(R.string.loading_question))
+            }
         }
+    }
+}
+
+
+@Composable
+fun GameResultSection(result: SubmitAnswerData) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+    ) {
+        Text(
+            stringResource(R.string.game_finished),
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(stringResource(R.string.score, result.score?.toInt() ?: 0))
+        Text(stringResource(R.string.correct_answers, result.correctAnswers, result.totalQuestions))
+        if (result.isNewHighScore == true) {
+            Text(stringResource(R.string.new_high_score))
+        }
+
     }
 }
 

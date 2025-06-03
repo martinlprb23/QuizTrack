@@ -16,5 +16,5 @@ data class Playlist(
     val id: Long,
     val title: String,
     @SerialName("picture_medium")
-    val picture: String
+    val picture: String,
 )
