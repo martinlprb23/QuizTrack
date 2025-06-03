@@ -2,6 +2,7 @@ package com.roblescode.quiztrack.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val primary = Color(0xFF800080)
 
 val primaryLight = Color(0xFF804D7A)
 val onPrimaryLight = Color(0xFFFFFFFF)
