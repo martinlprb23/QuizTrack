@@ -81,18 +81,4 @@ class TriviaViewModel(
             }
         }
     }
-
-
-    private val _playlistCover = MutableStateFlow<String?>(null)
-    val playlistCover: StateFlow<String?> = _playlistCover
-
-    fun findPlaylistCover(playlistId: Long) {
-        if (_playlistsResponse.value is Response.Success) {
-            val response = _playlistsResponse.value as Response.Success
-            val playlist = response.data.find { it.id == playlistId }
-            _playlistCover.value = playlist?.picture
-        }
-    }
-
-
 }

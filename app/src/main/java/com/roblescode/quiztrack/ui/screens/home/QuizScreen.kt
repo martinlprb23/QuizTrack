@@ -38,6 +38,7 @@ import com.roblescode.quiztrack.data.model.response.GameData
 import com.roblescode.quiztrack.data.model.response.SubmitAnswerData
 import com.roblescode.quiztrack.data.utils.Response
 import com.roblescode.quiztrack.domain.utils.AudioPlayer
+import com.roblescode.quiztrack.ui.navigation.QuizRoute
 import com.roblescode.quiztrack.ui.screens.auth.AuthViewModel
 import com.roblescode.quiztrack.ui.screens.home.components.PlayAndPause
 import com.roblescode.quiztrack.ui.screens.home.components.QuizOptions
@@ -47,19 +48,17 @@ import kotlinx.coroutines.delay
 @Composable
 fun QuizScreen(
     modifier: Modifier = Modifier,
-    playlistId: Long,
+    args: QuizRoute,
     triviaViewModel: TriviaViewModel,
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
 ) {
     val context = LocalContext.current
     val audioPlayer = remember { AudioPlayer(context) }
     val isPlaying by audioPlayer.isPlayingFlow.collectAsState()
-    val playListCover by triviaViewModel.playlistCover.collectAsState()
 
     LaunchedEffect(Unit) {
-        triviaViewModel.findPlaylistCover(playlistId)
-        triviaViewModel.startGame(authViewModel.currentUser, playlistId)
+        triviaViewModel.startGame(authViewModel.currentUser, args.playlistId)
     }
 
     DisposableEffect(Unit) {
@@ -90,7 +89,7 @@ fun QuizScreen(
 
                 is Response.Success -> GameSection(
                     gameData = gameResponse.data,
-                    coverImageUrl = playListCover,
+                    coverImageUrl = args.coverImageUrl,
                     isAudioPlaying = isPlaying,
                     onPlayAudio = { url -> audioPlayer.play(url) },
                     onPauseAudio = { audioPlayer.pause() },
@@ -110,7 +109,7 @@ fun QuizScreen(
 fun GameSection(
     modifier: Modifier = Modifier,
     gameData: GameData,
-    coverImageUrl: String?,
+    coverImageUrl: String,
     isAudioPlaying: Boolean,
     onPlayAudio: (String) -> Unit,
     onPauseAudio: () -> Unit,

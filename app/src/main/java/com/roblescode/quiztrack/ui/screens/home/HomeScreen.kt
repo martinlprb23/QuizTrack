@@ -51,6 +51,7 @@ import com.roblescode.quiztrack.R
 import com.roblescode.quiztrack.data.model.response.Playlist
 import com.roblescode.quiztrack.data.utils.Response
 import com.roblescode.quiztrack.ui.constants.Routes
+import com.roblescode.quiztrack.ui.navigation.QuizRoute
 import com.roblescode.quiztrack.ui.screens.auth.AuthViewModel
 import kotlinx.coroutines.delay
 
@@ -108,7 +109,14 @@ fun HomeScreen(
                 is Response.Loading -> CircularProgressIndicator()
                 is Response.Success -> PlaylistsList(
                     list = response.data,
-                    onClick = { navController.navigate("${Routes.QUIZ}/$it") }
+                    onClick = { playlist ->
+                        navController.navigate(
+                            QuizRoute(
+                                playlistId = playlist.id,
+                                coverImageUrl = playlist.picture
+                            )
+                        )
+                    }
                 )
 
                 is Response.Failure -> PlaylistsError(errorText = response.exception?.message)
@@ -119,7 +127,11 @@ fun HomeScreen(
 
 
 @Composable
-fun PlaylistsList(modifier: Modifier = Modifier, list: List<Playlist>, onClick: (Long) -> Unit) {
+fun PlaylistsList(
+    modifier: Modifier = Modifier,
+    list: List<Playlist>,
+    onClick: (playlist: Playlist) -> Unit
+) {
     LazyVerticalStaggeredGrid(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -150,7 +162,7 @@ fun PlaylistsList(modifier: Modifier = Modifier, list: List<Playlist>, onClick: 
                     modifier = modifier
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.large)
-                        .clickable(onClick = { onClick(playlist.id) })
+                        .clickable(onClick = { onClick(playlist) })
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
