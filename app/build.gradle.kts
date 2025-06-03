@@ -71,9 +71,6 @@ dependencies {
     // Credential Manager integration with Google Play Services (supports Passkeys, Smart Lock, etc.)
     implementation(libs.androidx.credentials.play.services.auth)
 
-    // Firebase Firestore: cloud NoSQL real-time database
-    implementation(libs.firebase.firestore)
-
     // Retrofit: HTTP client for making REST API calls
     implementation(libs.retrofit)
     implementation(libs.retrofit.serialization.converter)
