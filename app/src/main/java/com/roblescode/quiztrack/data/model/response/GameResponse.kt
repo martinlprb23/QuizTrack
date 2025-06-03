@@ -1,20 +1,34 @@
 package com.roblescode.quiztrack.data.model.response
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PlaylistResponse(
+data class GameResponse(
     val success: Boolean,
-    val data: List<Playlist>
+    val data: GameData? = null,
 )
 
 
 @Serializable
-data class Playlist(
-    @SerialName("id")
+data class GameData(
+    val currentScore: Int = 0,
+    val correctAnswers: Int = 0,
+    val sessionId: String,
+    val questions: List<Question>,
+    val playlistId: Long,
+)
+
+
+@Serializable
+data class Question(
+    val trackId: Long,
+    val previewUrl: String,
+    val options: List<Option> = emptyList()
+)
+
+
+@Serializable
+data class Option(
     val id: Long,
-    val title: String,
-    @SerialName("picture_medium")
-    val picture: String,
+    val text: String,
 )
