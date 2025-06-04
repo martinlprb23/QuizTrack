@@ -133,6 +133,12 @@ fun GameSection(
                 delay(500)
                 currentIndex++
                 isWaitingForAnswer = false
+
+                  gameData.questions.getOrNull(currentIndex)?.previewUrl?.let { url ->
+                    if (url.isNotEmpty()) {
+                        onPlayAudio(url)
+                    }
+                }
             }
         }
     }*/
