@@ -64,9 +64,12 @@ fun HomeScreen(
     authViewModel: AuthViewModel,
 ) {
 
-    LaunchedEffect(Unit) {
-        triviaViewModel.setCurrentUser(authViewModel.currentUser)
-        triviaViewModel.getPlaylists()
+    LaunchedEffect(authViewModel.loginResponse.collectAsState().value) {
+        val user = authViewModel.loginResponse.value
+        if (user is Response.Success) {
+            triviaViewModel.setCurrentUser(user.data)
+            triviaViewModel.getPlaylists()
+        }
     }
 
 
