@@ -134,6 +134,12 @@ fun GameSection(
                 delay(500)
                 currentIndex++
                 isWaitingForAnswer = false
+
+                gameData.questions.getOrNull(currentIndex)?.previewUrl?.let { url ->
+                    if (url.isNotEmpty()) {
+                        onPlayAudio(url)
+                    }
+                }
             }
         }
     }
@@ -175,6 +181,7 @@ fun GameSection(
                     question = currentQuestion,
                     onOptionSelected = { option ->
                         if (!isWaitingForAnswer) {
+                            onPauseAudio()
                             isWaitingForAnswer = true
                             triviaViewModel.sendAnswer(
                                 gameData.sessionId,
