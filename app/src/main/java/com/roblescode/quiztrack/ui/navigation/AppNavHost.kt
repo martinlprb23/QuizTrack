@@ -23,7 +23,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME,
+        startDestination = Routes.SPLASH,
         modifier = modifier
     ) {
 
